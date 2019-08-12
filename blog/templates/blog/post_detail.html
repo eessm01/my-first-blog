@@ -20,4 +20,26 @@
     <h1> {{ post.title }}  </h1>
     <p> {{ post.text|linebreaksbr }} </p> 
   </div>
-{% endblock %}
+  
+  <hr>
+
+  <a href="{% url 'add_comment_to_post' pk=post.pk %}" class="btn btn-default">Agregar comentario</a>
+
+  {% for comment in post.comments.all %}
+    {% if user.is_authenticated or comment.approved_comment %}
+      <div class="comment">
+        <div class="date">
+          {{ comment.created_date }}
+          {% if not comment.approved_comment %}
+            <a href="{% url 'comment_remove' pk=comment.pk %}" class="btn btn-default">Eliminar</a>
+            <a href="{% url 'comment_approve' pk=comment.pk %}" class="btn btn-default">Aprobar</a>
+          {% endif %}
+        </div>   
+        <strong>{{ comment.author }}</strong> 
+        <p>{{ comment.text|linebreaks }}</p>         
+      </div>
+    {% endif %}
+  {% empty %}
+    <p>Aún no hay comentarios</p>
+  {% endfor %}
+  {% endblock %}
